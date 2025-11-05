@@ -16,15 +16,29 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    
     - name: Set up Python 3.10
       uses: actions/setup-python@v3
       with:
         python-version: "3.10"
+    
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install faiss-cpu numpy h5py pytest requests
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    
+    - name: Verify output.txt exists
+      run: |
+        if [ ! -f "output.txt" ]; then
+          echo "Error: output.txt not found in repository!"
+          exit 1
+        fi
+        echo "output.txt found ✓"
+        echo "File contents:"
+        head -5 output.txt
+        echo "..."
+        tail -5 output.txt
+    
     - name: Test with pytest
       run: |
-        pytest test_hnsw.py
+        pytest test_hnsw.py -v
